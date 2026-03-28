@@ -25,6 +25,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -37,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   void _addToSum(double value) {
     setState(() {
       _sum += value;
-      _operation += value.toString() + " + ";
+      _operation += "$value + ";
     });
   }
 
@@ -60,7 +62,9 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
-        backgroundColor: _isDarkMode ? Color.fromARGB(255, 0, 0, 0) : Colors.grey[100],
+        backgroundColor: _isDarkMode
+            ? Color.fromARGB(255, 0, 0, 0)
+            : Colors.grey[100],
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -68,17 +72,40 @@ class _MyAppState extends State<MyApp> {
             SizedBox(height: 20),
             Text('Operation: $_operation', style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [btncalc(1.25), btncalc(1.5), btncalc(1.75), btncalc(2)]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                btncalc(1.25),
+                btncalc(1.5),
+                btncalc(1.75),
+                btncalc(2),
+              ],
+            ),
             SizedBox(height: 20),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [btncalc(0.25), btncalc(0.5), btncalc(0.75), btncalc(1)]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                btncalc(0.25),
+                btncalc(0.5),
+                btncalc(0.75),
+                btncalc(1),
+              ],
+            ),
             SizedBox(height: 20),
             ElevatedButton(onPressed: _resetSum, child: Text('Reset')),
 
             SizedBox(height: 30),
-            Text('This App is developed by Mohammed NOR\nCopyrights Reserved © 2022', style: TextStyle(fontStyle: FontStyle.italic), textAlign: TextAlign.center),
+            Text(
+              'This App is developed by Mohammed NOR\nCopyrights Reserved © 2022',
+              style: TextStyle(fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(onPressed: _toggleDarkMode, child: Icon(_isDarkMode ? Icons.dark_mode : Icons.light_mode)),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _toggleDarkMode,
+          child: Icon(_isDarkMode ? Icons.dark_mode : Icons.light_mode),
+        ),
       ),
     );
   }
@@ -90,14 +117,20 @@ class _MyAppState extends State<MyApp> {
         margin: EdgeInsets.symmetric(horizontal: 10),
         child: ElevatedButton(
           onPressed: () => _addToSum(vlu),
-          child: Text(vlu.toString()),
           style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF4F378A)),
             foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-            padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.symmetric(vertical: 40, horizontal: 3)),
-            textStyle: WidgetStateProperty.all<TextStyle>(TextStyle(fontSize: 40)),
-            shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            padding: WidgetStateProperty.all<EdgeInsets>(
+              EdgeInsets.symmetric(vertical: 40, horizontal: 3),
+            ),
+            textStyle: WidgetStateProperty.all<TextStyle>(
+              TextStyle(fontSize: 40),
+            ),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
           ),
+          child: Text(vlu.toString()),
         ),
       ),
     );

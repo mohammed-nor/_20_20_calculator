@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Calculator extends StatefulWidget {
+  const Calculator({super.key});
+
   @override
   _CalculatorState createState() => _CalculatorState();
 }
@@ -23,17 +25,12 @@ class _CalculatorState extends State<Calculator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My Calculator'),
-      ),
+      appBar: AppBar(title: Text('My Calculator')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Sum: $_sum',
-            style: TextStyle(fontSize: 24.0),
-          ),
+          Text('Sum: $_sum', style: TextStyle(fontSize: 24.0)),
           SizedBox(height: 20.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -56,10 +53,7 @@ class _CalculatorState extends State<Calculator> {
             ],
           ),
           SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: _resetSum,
-            child: Text('Reset Sum'),
-          ),
+          ElevatedButton(onPressed: _resetSum, child: Text('Reset Sum')),
         ],
       ),
     );
