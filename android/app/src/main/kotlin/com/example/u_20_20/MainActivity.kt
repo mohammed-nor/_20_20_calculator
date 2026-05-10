@@ -1,4 +1,4 @@
-package com.norit.u_20_20
+package com.norit.twentytwenty
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,6 @@
 {
-    "name": "_20_20",
-    "short_name": "_20_20",
+    "name": "twentytwenty",
+    "short_name": "twentytwenty",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
