@@ -51,6 +51,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   double _sum = 0;
+  double _maxSum = 20.0;
+  bool _showMaxLimitWarning = false;
   String _operation = "";
   bool _isDarkMode = true;
   List<String> _savedCalculations = [];
@@ -61,7 +63,14 @@ class _HomePageState extends State<HomePage> {
   DateTime? _adsDisabledUntil;
 
   void _addToSum(double value) {
+    if (_sum + value > _maxSum) {
+      setState(() {
+        _showMaxLimitWarning = true;
+      });
+      return;
+    }
     setState(() {
+      _showMaxLimitWarning = false;
       _sum += value;
       _operation += "$value + ";
     });
@@ -77,6 +86,7 @@ class _HomePageState extends State<HomePage> {
         }
         _sum = 0;
         _operation = "";
+        _showMaxLimitWarning = false;
       });
     }
   }
@@ -85,6 +95,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _sum = 0;
       _operation = "";
+      _showMaxLimitWarning = false;
     });
   }
 
@@ -92,6 +103,165 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isDarkMode = !_isDarkMode;
     });
+  }
+
+  void _manageMaxSum() {
+    TextEditingController _controller = TextEditingController(
+      text: _maxSum.toString(),
+    );
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: _isDarkMode ? Color(0xFF1F1F3F) : Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 15.0,
+                  offset: const Offset(0.0, 10.0),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF4F378A).withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.speed_rounded,
+                    size: 40,
+                    color: Color(0xFF4F378A),
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                Text(
+                  "Set Maximum Sum",
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                    color: _isDarkMode ? Colors.white : Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  "Calculations exceeding this limit will trigger a warning.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.0,
+                    color: _isDarkMode ? Colors.white54 : Colors.black54,
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                TextField(
+                  controller: _controller,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  style: TextStyle(
+                    color: _isDarkMode ? Colors.white : Colors.black87,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: _isDarkMode
+                        ? Color(0xFF2D2D4D)
+                        : Color(0xFFF5F7FA),
+                    hintText: "Enter value",
+                    hintStyle: TextStyle(
+                      color: _isDarkMode ? Colors.white30 : Colors.black26,
+                      fontSize: 20,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: Color(0xFF4F378A),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 32.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: _isDarkMode
+                                ? Colors.white60
+                                : Colors.black54,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          double? newVal = double.tryParse(_controller.text);
+                          if (newVal != null) {
+                            setState(() {
+                              _maxSum = newVal;
+                            });
+                          }
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF4F378A),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                          shadowColor: Color(0xFF4F378A).withOpacity(0.5),
+                        ),
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _incrementFullScreenAds() {
@@ -133,28 +303,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Color> _getGradientColors() {
-    int level = (_sum / 5).toInt();
+    double percent = _maxSum > 0 ? _sum / _maxSum : 0;
 
-    if (level >= 3) {
-      // 20-40: Green
+    if (percent >= 1.0) {
+      // 100% or more: Green
       return [
         Color(0xFF66AA66).withOpacity(0.7),
         Color(0xFF88CC88).withOpacity(0.7),
       ];
-    } else if (level > 2) {
-      // 40-60: Yellow
+    } else if (percent >= 0.75) {
+      // 75% to < 100%: Yellow
       return [
         Color(0xFFBBBB55).withOpacity(0.7),
         Color(0xFFDDDD77).withOpacity(0.7),
       ];
-    } else if (level > 1) {
-      // 60-80: Orange
+    } else if (percent >= 0.50) {
+      // 50% to < 75%: Orange
       return [
         Color(0xFFCC8855).withOpacity(0.7),
         Color(0xFFDD9966).withOpacity(0.7),
       ];
     } else {
-      // 80+: Red
+      // < 50%: Red
       return [
         Color(0xFFBB6666).withOpacity(0.7),
         Color(0xFFCC8888).withOpacity(0.7),
@@ -232,6 +402,28 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
+                          if (_showMaxLimitWarning)
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.redAccent,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Limit Exceeded!',
+                                    style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -394,9 +586,10 @@ class _HomePageState extends State<HomePage> {
                           SizedBox(
                             width: double.infinity,
                             child: Text(
-                              'This App is developed by Mohammed NOR\nCopyrights Reserved © 2022',
+                              'Developed by Mohammed NOR\n NOR It! ©',
                               style: TextStyle(
                                 fontStyle: FontStyle.italic,
+                                fontSize: 12,
                                 color: _isDarkMode
                                     ? Colors.white70
                                     : Colors.black87,
@@ -409,6 +602,12 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
+                                FloatingActionButton(
+                                  mini: true,
+                                  onPressed: _manageMaxSum,
+                                  child: Icon(Icons.settings),
+                                ),
+                                SizedBox(width: 8),
                                 FloatingActionButton(
                                   mini: true,
                                   onPressed: _toggleDarkMode,
@@ -425,141 +624,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(height: 6),
-
-                    // Theme Toggle Button
-
-                    // Ads Banner at the bottom
-                    /*if (_shouldShowAds())
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF4F378A), Color(0xFF6B5BA1)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(6),
-                            topRight: Radius.circular(6),
-                          ),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 6,
-                        ),
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Special Offer!',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Watch ads to remove ads for 7 days !',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                      SizedBox(height: 6),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 4,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: _watchAd,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            child: Text(
-                                              'Watch Ad',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xFF4F378A),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      'Ads remained: ${5 - _fullScreenAdsWatched}',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.white60,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            // Disable Ads Button (Top Right Corner)
-                            if (_fullScreenAdsWatched >= 5)
-                              Positioned(
-                                top: -8,
-                                right: 8,
-                                child: GestureDetector(
-                                  onTap: _disableAdsForWeek,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Color(0xFF4F378A),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 4,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    padding: EdgeInsets.all(6),
-                                    child: Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),*/
                   ],
                 ),
               ),
